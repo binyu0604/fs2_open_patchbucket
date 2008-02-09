@@ -9,13 +9,25 @@
 
 /*
  * $Logfile: /Freespace2/code/parse/SEXP.CPP $
- * $Revision: 2.335 $
- * $Date: 2007-12-24 19:48:14 $
- * $Author: turey $
+ * $Revision: 2.339 $
+ * $Date: 2008-01-19 01:23:40 $
+ * $Author: Goober5000 $
  *
  * main sexpression generator
  *
  * $Log: not supported by cvs2svn $
+ * Revision 2.338  2008/01/19 00:27:42  Goober5000
+ * we all got led down the garden path there!  revert all radar range modifications
+ *
+ * Revision 2.337  2008/01/16 10:15:21  Backslash
+ * Fixed set-object-speed sexps.  Thanks for the inspiration, Keldor!
+ *
+ * Revision 2.336  2008/01/12 08:42:34  karajorma
+ * Add SEXPs for determining the players score and how many respawns they've used.
+ *
+ * Revision 2.335  2007/12/24 19:48:14  turey
+ * Small fix for sim hull stuff.
+ *
  * Revision 2.334  2007/11/24 10:14:58  wmcoolmon
  * More script-eval functionality; additional matrix functions
  *
@@ -296,7 +308,7 @@
  * Changes to support the new Enable/Disable-Builtin-Messages SEXP
  *
  * Revision 2.253  2006/04/04 11:38:07  wmcoolmon
- * Maneuvering hruster scaling, gun convergence
+ * Maneuvering thruster scaling, gun convergence
  *
  * Revision 2.252  2006/04/03 09:05:37  wmcoolmon
  * show-subtitle's got its groove back
@@ -1778,6 +1790,9 @@ sexp_oper Operators[] = {
 	{ "num-players",				OP_NUM_PLAYERS,				0, 0, },
 	{ "num_kills",					OP_NUM_KILLS,				1, 1			},
 	{ "num_assists",				OP_NUM_ASSISTS,				1, 1			},
+	{ "ship_score",					OP_SHIP_SCORE,				1, 1			},
+	{ "player-deaths",				OP_PLAYER_DEATHS,				1, 1			},
+	{ "respawns-left",				OP_RESPAWNS_LEFT,				1, 1			},	
 	{ "num_type_kills",				OP_NUM_TYPE_KILLS,			2,	2			},
 	{ "num_class_kills",			OP_NUM_CLASS_KILLS,			2,	2			},
 	{ "team-score",					OP_TEAM_SCORE,				1,	1,	}, 
@@ -1996,7 +2011,7 @@ sexp_oper Operators[] = {
 	{ "hud-set-coords",				OP_HUD_SET_COORDS,				3, 3 },	//WMCoolmon
 	{ "hud-set-frame",				OP_HUD_SET_FRAME,				2, 2 },	//WMCoolmon
 	{ "hud-set-color",				OP_HUD_SET_COLOR,				4, 4 }, //WMCoolmon
-	{ "radar-set-max-range",		OP_RADAR_SET_MAX_RANGE,			1, 1 }, //Kazan
+	{ "hud-set-max-targeting-range",	OP_HUD_SET_MAX_TARGETING_RANGE,		1, 1 }, // Goober5000
 
 /*	made obsolete by Goober5000
 	{ "error",	OP_INT3,	0, 0 },
@@ -4072,6 +4087,8 @@ int get_sexp(char *token)
 				strcpy(token, "ai-chase-any");
 			else if (!stricmp(token, "change-ship-model"))
 				strcpy(token, "change-ship-class");
+			else if (!stricmp(token, "radar-set-max-range"))
+				strcpy(token, "hud-set-max-targeting-range");
 
 			op = get_operator_index(token);
 			if (op != -1) {
@@ -6592,13 +6609,13 @@ void sexp_set_object_speed(object *objp, int speed, int axis, int subjective)
 		vec3d subjective_vel;
 
 		// translate objective into subjective velocity
-		vm_vec_unrotate(&subjective_vel, &objp->phys_info.vel, &objp->orient);
+		vm_vec_rotate(&subjective_vel, &objp->phys_info.vel, &objp->orient);
 
 		// set it
 		subjective_vel.a1d[axis] = i2fl(speed);
 
 		// translate it back to objective
-		vm_vec_rotate(&objp->phys_info.vel, &subjective_vel, &objp->orient);
+		vm_vec_unrotate(&objp->phys_info.vel, &subjective_vel, &objp->orient);
 	}
 	else
 	{
@@ -8790,9 +8807,14 @@ void sexp_hud_set_color(int n)
 #endif
 }
 
-void sexp_radar_set_max_range(int n)
+
+// Goober5000
+void sexp_hud_set_max_targeting_range(int n)
 {
-	hud_set_radar_max_range(atof(CTEXT(n)));
+	Hud_max_targeting_range = eval_num(n);
+
+	if (Hud_max_targeting_range < 0)
+		Hud_max_targeting_range = 0;
 }
 
 // Goober5000
@@ -14299,7 +14321,7 @@ int sexp_missile_locked(int node)
 	return SEXP_FALSE;
 }
 
-int sexp_num_kills_or_assists(int node, int kills)
+int sexp_return_player_data(int node, int type)
 {
 	int sindex;
 	player *p = NULL;
@@ -14332,15 +14354,28 @@ int sexp_num_kills_or_assists(int node, int kills)
 	}
 
 	// now, if we have a valid player, return his kills
-	if(p != NULL)
-	{
-		if (kills)
-		{
-			return p->stats.m_kill_count_ok;
-		}
-		else
-		{
-			return p->stats.m_assists;
+	if(p != NULL) {
+		switch (type) {
+			case OP_NUM_KILLS:
+				return p->stats.m_kill_count_ok;
+
+			case OP_NUM_ASSISTS:
+				return p->stats.m_assists;
+
+			case OP_SHIP_SCORE: 
+				return p->stats.m_score;
+
+			case OP_PLAYER_DEATHS: 
+				return p->stats.m_player_deaths;
+
+			case OP_RESPAWNS_LEFT:
+				if (Game_mode & GM_MULTIPLAYER) {
+					return Netgame.respawn - p->stats.m_player_deaths;
+				}
+				return 0;
+
+			default:
+				Int3();
 		}
 	}
 
@@ -15958,8 +15993,8 @@ int eval_sexp(int cur_node, int referenced_node)
 				sexp_val = SEXP_TRUE;
 				break;
 
-			case OP_RADAR_SET_MAX_RANGE: //Kazan
-				sexp_radar_set_max_range(node);
+			case OP_HUD_SET_MAX_TARGETING_RANGE:
+				sexp_hud_set_max_targeting_range(node);
 				sexp_val = SEXP_TRUE;
 				break;
 
@@ -16360,7 +16395,10 @@ int eval_sexp(int cur_node, int referenced_node)
 
 			case OP_NUM_KILLS:
 			case OP_NUM_ASSISTS:
-				sexp_val = sexp_num_kills_or_assists(node, (op_num == OP_NUM_KILLS));
+			case OP_SHIP_SCORE: 
+			case OP_PLAYER_DEATHS: 
+			case OP_RESPAWNS_LEFT:
+				sexp_val = sexp_return_player_data(node, op_num);
 				break;
 
 			case OP_NUM_TYPE_KILLS:
@@ -17075,6 +17113,9 @@ int query_operator_return_type(int op)
 		case OP_NUM_PLAYERS:
 		case OP_NUM_KILLS:
 		case OP_NUM_ASSISTS:
+		case OP_PLAYER_DEATHS: 
+		case OP_RESPAWNS_LEFT:
+		case OP_SHIP_SCORE:
 		case OP_NUM_TYPE_KILLS:
 		case OP_NUM_CLASS_KILLS:
 		case OP_SHIELD_RECHARGE_PCT:
@@ -17258,7 +17299,7 @@ int query_operator_return_type(int op)
 		case OP_HUD_SET_COORDS:
 		case OP_HUD_SET_FRAME:
 		case OP_HUD_SET_COLOR:
-		case OP_RADAR_SET_MAX_RANGE:
+		case OP_HUD_SET_MAX_TARGETING_RANGE:
 		case OP_SHIP_CHANGE_ALT_NAME:
 		case OP_SET_DEATH_MESSAGE:
 		case OP_SCRAMBLE_MESSAGES:
@@ -17424,7 +17465,7 @@ int query_operator_argument_type(int op, int argnum)
 		case OP_SPECIAL_CHECK:
 		case OP_AI_WARP_OUT:
 		case OP_TEAM_SCORE:
-		case OP_RADAR_SET_MAX_RANGE: //Kazan
+		case OP_HUD_SET_MAX_TARGETING_RANGE:
 		case OP_MISSION_SET_NEBULA:	//WMC
 			return OPF_POSITIVE;
 
@@ -18203,6 +18244,9 @@ int query_operator_argument_type(int op, int argnum)
 
 		case OP_NUM_KILLS:
 		case OP_NUM_ASSISTS:
+		case OP_SHIP_SCORE:
+		case OP_PLAYER_DEATHS: 
+		case OP_RESPAWNS_LEFT:
 			return OPF_SHIP;
 
 		case OP_NUM_TYPE_KILLS:
@@ -19731,7 +19775,7 @@ int get_subcategory(int sexp_id)
 		case OP_HUD_SET_COORDS:
 		case OP_HUD_SET_FRAME:
 		case OP_HUD_SET_COLOR:
-		case OP_RADAR_SET_MAX_RANGE: //Kazan
+		case OP_HUD_SET_MAX_TARGETING_RANGE:
 			return CHANGE_SUBCATEGORY_HUD;
 
 		case OP_CUTSCENES_SET_CUTSCENE_BARS:
@@ -19855,13 +19899,6 @@ sexp_help_struct Sexp_help[] = {
 		"Set to true to enable automatic cinematics, set to false to disable automatic cinematics." },
 
 	// -------------------------- -------------------------- -------------------------- 
-
-
-	// For the mission designer to enforce a -radar_reduce
-	{ OP_RADAR_SET_MAX_RANGE, "Radar-set-max-range (Action operator)\r\n"
-		"\tSets the maximum radar range to the value of the argument.\r\n"
-		"\tEntering -1 will reset maximum radar range to infinity.\r\n"
-		"\tTakes 1 numeric argument: The maximum radar range.\r\n"},
 
 	// Goober5000
 	{ OP_ABS, "Absolute value (Arithmetic operator)\r\n"
@@ -21371,6 +21408,21 @@ sexp_help_struct Sexp_help[] = {
 		"\tSo, for single player, this would be Alpha 1. For multiplayer, it can be any ship with a player in it. If, at any\r\n"
 		"\ttime there is no player in a given ship, this sexpression will return 0"},
 
+	{ OP_SHIP_SCORE, "ship-score\r\n"
+		"\tReturns the score a player has. The ship specified in the first field should be the ship the player is in.\r\n"
+		"\tSo, for single player, this would be Alpha 1. For multiplayer, it can be any ship with a player in it. If, at any\r\n"
+		"\ttime there is no player in a given ship, this sexpression will return 0"},
+
+	{ OP_PLAYER_DEATHS, "player-deaths\r\n"
+		"\tReturns the # times a player has died. The ship specified in the first field should be the ship the player is in.\r\n"
+		"\tOnly really useful for multiplayer, it can be any ship with a player in it. If, at any\r\n"
+		"\ttime there is no player in a given ship, this sexpression will return 0"},
+
+	{ OP_RESPAWNS_LEFT, "player-deaths\r\n"
+		"\tReturns the # respawns a player has remaining. The ship specified in the first field should be the ship the player is in.\r\n"
+		"\tOnly really useful for multiplayer, it can be any ship with a player in it. If, at any\r\n"
+		"\ttime there is no player in a given ship, this sexpression will return 0"},
+
 	{ OP_NUM_TYPE_KILLS, "num-type-kills\r\n"
 		"\tReturns the # of kills a player has on a given ship type (fighter, bomber, cruiser, etc).\r\n"
 		"The ship specified in the first field should be the ship the player is in.\r\n"
@@ -21865,6 +21917,12 @@ sexp_help_struct Sexp_help[] = {
 	{ OP_HUD_DISABLE_EXCEPT_MESSAGES, "hud-disable-except-messages\r\n"
 		"\tSets whether the hud (except for messages) is disabled.  Takes 1 argument...\r\n"
 		"\t1: Flag (1 to disable, 0 to re-enable)"
+	},
+
+	// Goober5000
+	{ OP_HUD_SET_MAX_TARGETING_RANGE, "hud-set-max-targeting-range\r\n"
+		"\tSets the farthest distance at which an object can be targeted.  Takes 1 argument...\r\n"
+		"\1: Maximum targeting distance (0 for infinite)\r\n"
 	},
 
 	// Goober5000

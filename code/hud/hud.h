@@ -9,13 +9,19 @@
 
 /*
  * $Logfile: /Freespace2/code/Hud/HUD.h $
- * $Revision: 2.24 $
- * $Date: 2006-12-28 00:59:27 $
- * $Author: wmcoolmon $
+ * $Revision: 2.26 $
+ * $Date: 2008-01-19 01:23:40 $
+ * $Author: Goober5000 $
  *
  * Header file for functions that contain HUD functions at a high level
  *
  * $Log: not supported by cvs2svn $
+ * Revision 2.25  2008/01/05 02:39:42  wmcoolmon
+ * hud_get_draw()
+ *
+ * Revision 2.24  2006/12/28 00:59:27  wmcoolmon
+ * WMC codebase commit. See pre-commit build thread for details on changes.
+ *
  * Revision 2.23  2006/09/04 09:25:56  Backslash
  * Make hud toggle apply to hud framerate, statistics, and camera position
  *
@@ -408,6 +414,8 @@ extern float HUD_offset_y;
 extern float Pl_target_integrity;
 extern float Player_rearm_eta;
 
+extern int Hud_max_targeting_range;
+
 void HUD_init_colors();
 void HUD_init();
 void hud_update_frame();		// updates hud systems not dependant on rendering
@@ -487,6 +495,7 @@ void	hud_subspace_notify_abort();
 // render multiplayer text message currently being entered if any
 void hud_maybe_render_multi_text();
 
+int hud_get_draw();
 void hud_toggle_draw();
 int	hud_disabled();
 int hud_support_find_closest( int objnum );
