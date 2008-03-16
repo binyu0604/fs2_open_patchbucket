@@ -385,7 +385,7 @@ extern player *Player;								// pointer to my information
 
 extern int Player_use_ai;
 extern int view_centering;
-extern angles chase_slew_angles;
+extern angles chase_slew_angles;					// The viewing angles in which viewer_slew_angles will chase to. 				
 
 extern void player_init();							// initialization per level
 extern void player_level_init();
