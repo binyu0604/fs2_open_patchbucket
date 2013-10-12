@@ -131,6 +131,10 @@ if(UNIX)
 		${OPENAL_LIBRARY}
 		${wxWidgets_LIBRARIES}
 	)
+	set_target_properties(wxfred2
+		PROPERTIES
+			EXCLUDE_FROM_ALL
+	)
 elseif(MSVC)
 	target_compile_definitions(wxfred2 PUBLIC
 		WINVER=0x0501
