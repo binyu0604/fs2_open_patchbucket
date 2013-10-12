@@ -595,5 +595,5 @@ endif(MFC_FOUND)
 
 find_package(wxWidgets COMPONENTS gl core base)
 if(wxWidgets_FOUND)
-	add_subdirectory(wxfred2)
+	add_subdirectory(wxfred2 EXCLUDE_FROM_ALL)
 endif(wxWidgets_FOUND)
