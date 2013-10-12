@@ -57,6 +57,8 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
 	include(toolchain-gcc.cmake)
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "MSVC")
 	include(toolchain-msvc.cmake)
+elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+	include(toolchain-clang.cmake)
 endif()
 
 include(dependencies.cmake)
