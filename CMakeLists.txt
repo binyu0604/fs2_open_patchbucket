@@ -21,6 +21,7 @@ else()
 	if(NOT CMAKE_BUILD_TYPE)
 		set(CMAKE_BUILD_TYPE "DEBUG" CACHE STRING "Default build configuration used." FORCE)
 		message(WARNING "CMAKE_BUILD_TYPE was not specified, defaulting to Debug configuration.")
+	endif()
 endif()
 
 cmake_minimum_required(VERSION 2.8)
