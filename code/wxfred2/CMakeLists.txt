@@ -133,7 +133,7 @@ if(UNIX)
 	)
 	set_target_properties(wxfred2
 		PROPERTIES
-			EXCLUDE_FROM_ALL
+			EXCLUDE_FROM_ALL TRUE
 	)
 elseif(MSVC)
 	target_compile_definitions(wxfred2 PUBLIC
