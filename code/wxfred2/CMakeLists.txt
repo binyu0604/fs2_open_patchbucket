@@ -108,6 +108,9 @@ target_include_directories(wxfred2 PUBLIC
 	${THEROA_INCLUDE_DIRS}
 	${wxWidgets_INCLUDE_DIRS}
 )
+target_link_libraries(wxfred2
+	${wxWidgets_LIBRARIES}
+)
 
 if(UNIX)
 	target_compile_definitions(wxfred2 PUBLIC
@@ -129,13 +132,14 @@ if(UNIX)
 		${LUA_LIBRARY}
 		${PNG_LIBRARY}
 		${OPENAL_LIBRARY}
-		${wxWidgets_LIBRARIES}
 	)
 	set_target_properties(wxfred2
 		PROPERTIES
 			EXCLUDE_FROM_ALL TRUE
 	)
 elseif(MSVC)
+	set(wxWidgets_CONFIGURATION "mswu" CACHE STRING "Release WxWidgets configuration" FORCE)
+
 	target_compile_definitions(wxfred2 PUBLIC
 		WINVER=0x0501
 		_WIN32_WINNT=0x0501
@@ -153,7 +157,6 @@ elseif(MSVC)
 		jpeg
 		openal
 		${DIRECTX_LIBRARIRES}
-		${wxWidgets_LIBRARIES}
 	)
 	list(APPEND CMAKE_CXX_STANDARD_LIBRARIES
 		comctl32.lib
@@ -166,7 +169,6 @@ elseif(MSVC)
 	)
 	set_target_properties(wxfred2
 		PROPERTIES
-			COMPILE_DEFINITIONS_DEBUG "PDB_DEBUGGING=1;_HAS_ITERATOR_DEBUGGING=0"
 			RELEASE_POSTFIX "_${VERSION_STRING}"
 			DEBUG_POSTFIX "_${VERSION_STRING}-DEBUG"
 			SSE2_POSTFIX "_${VERSION_STRING}-SSE2"
