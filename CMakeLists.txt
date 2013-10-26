@@ -14,7 +14,7 @@
 project("FSSCP" C CXX)
 
 if(MSVC)
-	set(CMAKE_CONFIGURATION_TYPES "Debug;Release;SSE2" CACHE STRING "Available configurations" FORCE)
+	set(CMAKE_CONFIGURATION_TYPES "Debug;Debug_SSE;Debug_SSE2;Debug_AVX;Release;Release_SSE;Release_SSE2;Release_AVX" CACHE STRING "Available configurations" FORCE)
 	set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 	set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 else()
