@@ -131,7 +131,7 @@ set(FRED2_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/wing_editor.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/wing_editor.h
 )
-	
+
 set_source_files_properties(
 	${CMAKE_CURRENT_SOURCE_DIR}/fred.rc
 		PROPERTIES
