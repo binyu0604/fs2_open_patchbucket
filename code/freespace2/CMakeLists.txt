@@ -83,8 +83,6 @@ elseif(MSVC)
 		/DUSE_OPENAL
 	)
 	target_link_libraries(fs2_open
-		jansson
-		mongoose
 		ogg
 		vorbis
 		vorbisfile
