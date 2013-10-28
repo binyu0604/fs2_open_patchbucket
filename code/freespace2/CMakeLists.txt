@@ -46,6 +46,8 @@ include_directories(fs2_open PUBLIC
 	${VORBISFILE_INCLUDE_DIRS}
 	${THEROA_INCLUDE_DIRS}
 	${ZLIB_INCLUDE_DIR}
+	${JANSSON_INCLUDE_DIRS}
+	${MONGOOSE_INCLUDE_DIR}
 )
 
 if(UNIX)
@@ -58,6 +60,8 @@ if(UNIX)
 		${SDL_INCLUDE_DIR}
 	)
 	target_link_libraries(fs2_open
+		mongoose
+		${JANSSON_LIBRARIES}
 		${OGG_LIBRARIES}
 		${OPENGL_LIBRARY}
 		${SDL_LIBRARY}
@@ -79,6 +83,8 @@ elseif(MSVC)
 		/DUSE_OPENAL
 	)
 	target_link_libraries(fs2_open
+		jansson
+		mongoose
 		ogg
 		vorbis
 		vorbisfile

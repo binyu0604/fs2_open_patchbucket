@@ -11,7 +11,12 @@ if(UNIX)
 	pkg_check_modules(THEORA REQUIRED theora)
 	pkg_check_modules(VORBIS REQUIRED vorbis)
 	pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
+	pkg_check_modules(JANSSON REQUIRED jansson)
 elseif(MSVC)
+	# Jansson
+	add_subdirectory(${PROJECT_SOURCE_DIR}/jansson)
+	set(JANSSON_INCLUDE_DIRS "${PROJECT_SOURCE_DIR}/jansson")
+
 	# JPEG
 	add_library(jpeg STATIC
 		libjpeg/jaricom.c
@@ -182,7 +187,7 @@ elseif(MSVC)
 	)
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua")
 
-	set_target_properties(jpeg png lua zlib
+	set_target_properties(jpeg png lua zlib jansson
 		PROPERTIES
 			COMPILE_FLAGS "/W0"
 			FOLDER "3rdparty"
@@ -242,3 +247,10 @@ elseif(MSVC)
 	)
 
 endif()
+
+# Mongoose
+add_subdirectory(${PROJECT_SOURCE_DIR}/mongoose)
+set_target_properties(mongoose PROPERTIES
+	FOLDER "3rdparty"
+)
+set(MONGOOSE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/mongoose)
