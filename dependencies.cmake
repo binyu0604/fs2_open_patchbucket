@@ -1,5 +1,7 @@
 # Dependencies
 if(UNIX)
+	link_directories(/usr/local/lib)
+
 	find_package(JPEG REQUIRED)
 	find_package(Lua51 REQUIRED)
 	find_package(OpenAL REQUIRED)
