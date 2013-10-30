@@ -13,6 +13,15 @@ if(UNIX)
 	pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 	pkg_check_modules(JANSSON REQUIRED jansson)
 
+	list(APPEND PKG_CONFIG_LINK_LIST
+		${OGG_LIBRARIES}
+		${THEORA_LIBRARIES}
+		${VORBIS_LIBRARIES}
+		${VORBISFILE_LIBRARIES}
+		${JANSSON_LIBRARIES}
+	)
+	list(REMOVE_DUPLICATES PKG_CONFIG_LINK_LIST)
+
 	# Mongoose
 	add_subdirectory(${PROJECT_SOURCE_DIR}/mongoose)
 	set(MONGOOSE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/mongoose)

@@ -61,17 +61,13 @@ if(UNIX)
 	)
 	target_link_libraries(fs2_open
 		mongoose
-		${JANSSON_LIBRARIES}
-		${OGG_LIBRARIES}
 		${OPENGL_LIBRARY}
 		${SDL_LIBRARY}
-		${THEORA_LIBRARIES}
-		${VORBISFILE_LIBRARIES}
-		${VORBIS_LIBRARIES}
 		${JPEG_LIBRARY}
 		${LUA_LIBRARY}
 		${PNG_LIBRARY}
 		${OPENAL_LIBRARY}
+		${PKG_CONFIG_LINK_LIST}
 	)
 elseif(MSVC)
 	add_definitions(
