@@ -34,6 +34,7 @@ if(FSO_USE_GRAPHITE)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fgraphite-identity -ftree-loop-linear -floop-strip-mine -floop-block -floop-nest-optimize")
 endif(FSO_USE_GRAPHITE)
 
+option(FSO_USE_NATIVE "Build using -march=native" FALSE)
 if(FSO_USE_NATIVE)
 	string(REGEX REPLACE "-march=[^ ]*" "-march=native" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 	string(REGEX REPLACE "-mtune=[^ ]*\ " "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})

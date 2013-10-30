@@ -28,8 +28,9 @@ cmake_minimum_required(VERSION 2.8)
 
 set(VERSION_STRING 3_6_19)
 
+option(FSO_REV_VERSION "Use git shorthash as the version string" FALSE)
 find_package(Git)
-if(GIT_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/.git AND REV_VERSION)
+if(GIT_FOUND AND EXISTS ${PROJECT_SOURCE_DIR}/.git AND FSO_REV_VERSION)
 	set(GIT_ARGS --no-pager rev-parse --short HEAD)
 	execute_process(
 		COMMAND ${GIT_EXECUTABLE} ${GIT_ARGS}
