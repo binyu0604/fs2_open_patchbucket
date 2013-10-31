@@ -1,5 +1,5 @@
 
-list(APPEND LIBCODE_SOURCES
+list(APPEND c
 	code/ai/ai.cpp
 	code/ai/ai.h
 	code/ai/ai_profiles.cpp
@@ -521,7 +521,7 @@ list(APPEND LIBCODE_SOURCES
 )
 
 if(UNIX)
-	list(APPEND LIBCODE_SOURCES
+	list(APPEND libcode_SOURCES
 		code/io/joy.h
 		code/io/joy_ff.h
 		code/io/joy-unix.cpp
@@ -535,7 +535,7 @@ if(UNIX)
 		code/windows_stub/config.h
 	)
 elseif(MSVC)
-	list(APPEND LIBCODE_SOURCES
+	list(APPEND libcode_SOURCES
 		code/directx/vasync.h
 		code/directx/vd3dtypes.h
 		code/directx/vddraw.h
@@ -571,4 +571,4 @@ elseif(MSVC)
 	)
 endif()
 
-add_library(libcode OBJECT ${LIBCODE_SOURCES})
+add_library(libcode OBJECT ${libcode_SOURCES})
