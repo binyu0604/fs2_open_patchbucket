@@ -23,7 +23,7 @@ set(CMAKE_CONFIGURATION_TYPES ${CMAKE_CONFIGURATION_TYPES} CACHE STRING "Availab
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
 
-if(NOT CMAKE_BUILD_TYPE)
+if(NOT CMAKE_BUILD_TYPE AND NOT MSVC)
 	set(CMAKE_BUILD_TYPE "DEBUG" CACHE STRING "Default build configuration used." FORCE)
 	message(WARNING "CMAKE_BUILD_TYPE was not specified, defaulting to Debug configuration.")
 endif()
@@ -75,3 +75,4 @@ endif()
 include(dependencies.cmake)
 
 include(fs2_open.cmake)
+include(fred2.cmake)
