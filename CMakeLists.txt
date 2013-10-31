@@ -108,4 +108,15 @@ endif()
 
 include(dependencies.cmake)
 
-add_subdirectory(code)
+find_package(MFC)
+if(MFC_FOUND)
+	include(fred2.cmake)
+endif(MFC_FOUND)
+
+find_package(wxWidgets COMPONENTS gl core base)
+if(wxWidgets_FOUND)
+	#include(wxfred2.cmake)
+endif(wxWidgets_FOUND)
+
+include(libcode.cmake)
+include(fs2_open.cmake)

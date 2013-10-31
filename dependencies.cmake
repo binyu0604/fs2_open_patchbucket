@@ -250,11 +250,21 @@ elseif(MSVC)
 	set(OPENAL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/openal/include")
 
 	# Various DirectX bits.
-	list(APPEND DIRECTX_LIBRARIRES
+	list(APPEND FSO_DIRECTX_LIBRARIRES
 		${PROJECT_SOURCE_DIR}/code/directx/dxguid.lib
 		${PROJECT_SOURCE_DIR}/code/directx/strmiids.lib
 		${PROJECT_SOURCE_DIR}/code/directx/vdinput.lib
 		${PROJECT_SOURCE_DIR}/code/directx/vdsound.lib
 	)
 
+	# Windows libraries.
+	list(APPEND FSO_WINDOWS_LIBRARIRES
+		comctl32.lib
+		msacm32.lib
+		odbc32.lib
+		odbccp32.lib
+		vfw32.lib
+		winmm.lib
+		wsock32.lib
+	)
 endif()
