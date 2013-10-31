@@ -172,9 +172,9 @@ list(APPEND fred2_LINK_LIBRARIES
 	${FSO_WINDOWS_LIBRARIRES}
 )
 
-target_include_directories(fs2_open PRIVATE ${fred2_INCLUDE_DIRECTORIES})
-
-target_link_libraries(fred2 ${fred2_LINK_LIBRARIES}
+target_include_directories(fred2 PUBLIC ${fred2_INCLUDE_DIRECTORIES})
+target_link_libraries(fred2
+	${fred2_LINK_LIBRARIES}
 	debug "nafxcwd.lib"
 	optimized "nafxcw.lib"
 )

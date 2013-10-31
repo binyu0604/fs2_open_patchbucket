@@ -5,11 +5,10 @@
 # toolchain-gcc.cmake - GNU/GCC toolchain configuration.
 # toolchain-msvc.cmake - Visual Studio toolchain configuration.
 # dependencies.cmake - Dependencies, does lookup on Linux and builds/imports on Windows.
-# code/CMakeLists.txt - CMakeLists.txt containing LIBCODE_SOURCES and other commons.
-#                       Includes the fred2, wxfred2 and freespace2 CMake subdirectories.
-# code/fred2/CMakeLists.txt - Fred2.
-# code/wxfred2/CMakeLists.txt - wxfred2.
-# code/freespace2/CMakeLists.txt - Freespace2.
+#
+# libcode.cmake - libcode.
+# fred2.cmake - Fred2.
+# fs2_open.cmake - Freespace2.
 
 project("FSSCP" C CXX)
 
@@ -55,11 +54,12 @@ macro(build_solution_tree ${ARGV0})
 	if(MSVC)
 		get_target_property(${ARGV0}_SOURCES ${ARGV0} SOURCES)
 		foreach(SOURCE_FILEPATH ${${ARGV0}_SOURCES})
-			string(REGEX REPLACE "${PROJECT_SOURCE_DIR}/code/" "" SOURCE_LOCAL_FILEPATH ${SOURCE_FILEPATH})
-			string(REGEX REPLACE ".*/" "" SOURCE_LOCAL_FILENAME ${SOURCE_LOCAL_FILEPATH})
-			string(REGEX REPLACE "${SOURCE_LOCAL_FILENAME}" "" SOURCE_LOCAL_DIRPATH ${SOURCE_LOCAL_FILEPATH})
+			string(REGEX REPLACE "code/" "" SOURCE_LOCAL_FILEPATH ${SOURCE_FILEPATH})
+			string(REGEX REPLACE "(.*)/" "" SOURCE_LOCAL_FILENAME ${SOURCE_LOCAL_FILEPATH})
+			string(REGEX REPLACE "/${SOURCE_LOCAL_FILENAME}" "" SOURCE_LOCAL_DIRPATH ${SOURCE_LOCAL_FILEPATH})
 			string(REGEX REPLACE "/" "\\\\\\\\" SOURCE_GROUPNAME ${SOURCE_LOCAL_DIRPATH})
-			source_group("${SOURCE_GROUPNAME}" FILES "${SOURCE_FILEPATH}")
+			source_group("${SOURCE_GROUPNAME}\\\\" FILES "${SOURCE_FILEPATH}")
+			message("source_group(${SOURCE_GROUPNAME} FILES ${SOURCE_FILEPATH})")
 		endforeach(SOURCE_FILEPATH ${${ARGV0}_SOURCES})
 	endif(MSVC)
 endmacro(build_solution_tree ${ARGV0})
