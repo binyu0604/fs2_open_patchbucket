@@ -15,15 +15,6 @@ if(UNIX)
 	pkg_check_modules(VORBISFILE REQUIRED vorbisfile)
 	pkg_check_modules(JANSSON REQUIRED jansson)
 
-	list(APPEND PKG_CONFIG_LINK_LIST
-		${OGG_LIBRARIES}
-		${THEORA_LIBRARIES}
-		${VORBIS_LIBRARIES}
-		${VORBISFILE_LIBRARIES}
-		${JANSSON_LIBRARIES}
-	)
-	list(REMOVE_DUPLICATES PKG_CONFIG_LINK_LIST)
-
 	# Mongoose
 	add_subdirectory(${PROJECT_SOURCE_DIR}/mongoose)
 	set(MONGOOSE_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/mongoose)
@@ -71,8 +62,7 @@ elseif(MSVC)
 		libjpeg/jutils.c
 		libjpeg/jversion.h
 	)
-	set_target_properties(jpeg
-		PROPERTIES
+	set_target_properties(jpeg PROPERTIES
 			COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS
 	)
 	set(JPEG_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/libjpeg")
@@ -128,8 +118,7 @@ elseif(MSVC)
 		libpng/pngwtran.c
 		libpng/pngwutil.c
 	)
-	set_target_properties(png
-		PROPERTIES
+	set_target_properties(png PROPERTIES
 			COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS
 			COMPILE_DEFINITIONS_DEBUG PNG_DEBUG=1
 			INCLUDE_DIRECTORIES "${ZLIB_INCLUDE_DIR}"
@@ -192,14 +181,12 @@ elseif(MSVC)
 		lua/lzio.h
 		lua/print.c
 	)
-	set_target_properties(lua
-		PROPERTIES
+	set_target_properties(lua PROPERTIES
 			COMPILE_FLAGS _CRT_SECURE_NO_WARNINGS
 	)
 	set(LUA_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/lua")
 
-	set_target_properties(jpeg png lua zlib
-		PROPERTIES
+	set_target_properties(jpeg png lua zlib PROPERTIES
 			COMPILE_FLAGS "/W0"
 			FOLDER "3rdparty"
 			STATIC_LIBRARY_FLAGS "/LTCG"
@@ -207,8 +194,7 @@ elseif(MSVC)
 
 	# Ogg
 	add_library(ogg STATIC IMPORTED)
-	set_target_properties(ogg
-		PROPERTIES
+	set_target_properties(ogg PROPERTIES
 			IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/oggvorbis/lib/ogg_static.lib
 			IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/oggvorbis/lib/ogg_static_d.lib
 	)
@@ -216,8 +202,7 @@ elseif(MSVC)
 
 	# Vorbis
 	add_library(vorbis STATIC IMPORTED)
-	set_target_properties(vorbis
-		PROPERTIES
+	set_target_properties(vorbis PROPERTIES
 			IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/oggvorbis/lib/vorbis_static.lib
 			IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/oggvorbis/lib/vorbis_static_d.lib
 	)
@@ -225,8 +210,7 @@ elseif(MSVC)
 
 	# Vorbisfile
 	add_library(vorbisfile STATIC IMPORTED)
-	set_target_properties(vorbisfile
-		PROPERTIES
+	set_target_properties(vorbisfile PROPERTIES
 			IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/oggvorbis/lib/vorbisfile_static.lib
 			IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/oggvorbis/lib/vorbisfile_static_d.lib
 	)
@@ -234,8 +218,7 @@ elseif(MSVC)
 
 	# Theora
 	add_library(theora STATIC IMPORTED)
-	set_target_properties(theora
-		PROPERTIES
+	set_target_properties(theora PROPERTIES
 			IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/oggvorbis/lib/theora_static.lib
 			IMPORTED_LOCATION_DEBUG ${PROJECT_SOURCE_DIR}/oggvorbis/lib/theora_static_d.lib
 	)
@@ -243,8 +226,7 @@ elseif(MSVC)
 
 	# OpenAL
 	add_library(openal STATIC IMPORTED)
-	set_target_properties(openal
-		PROPERTIES
+	set_target_properties(openal PROPERTIES
 			IMPORTED_LOCATION ${PROJECT_SOURCE_DIR}/openal/libs/win32/openal32.lib
 	)
 	set(OPENAL_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/openal/include")
