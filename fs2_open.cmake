@@ -1,4 +1,6 @@
 
+include(libcode.cmake)
+
 list(APPEND fs2_open_SOURCES
 	code/freespace2/freespace.cpp
 	code/freespace2/freespace.h
@@ -12,9 +14,8 @@ list(APPEND fs2_open_SOURCES
 	code/lab/wmcgui.h
 )
 
-add_executable(fs2_open WIN32 ${fs2_open_SOURCES} $<TARGET_OBJECTS:libcode>)
+add_executable(fs2_open WIN32 ${fs2_open_SOURCES} ${libcode_SOURCES})
 build_solution_tree(fs2_open)
-configure_builds(fs2_open)
 
 if(UNIX)
 	list(APPEND fs2_open_DEFINES
@@ -78,8 +79,27 @@ if(MSVC)
 	)
 endif()
 
+target_include_directories(fs2_open PRIVATE ${fs2_open_INCLUDE_DIRECTORIES})
 target_link_libraries(fs2_open ${fs2_open_LINK_LIBRARIES})
-set_target_properties(libcode fs2_open PROPERTIES
-	COMPILE_DEFINITIONS "${fs2_open_DEFINES}"
-	INCLUDE_DIRECTORIES "${fs2_open_INCLUDE_DIRECTORIES}"
-)
+
+get_property(DEBUG_CONFIGURATIONS GLOBAL PROPERTY DEBUG_CONFIGURATIONS)
+list(APPEND RELEASE_CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES})
+list(REMOVE_ITEM RELEASE_CONFIGURATIONS ${DEBUG_CONFIGURATIONS})
+foreach(RELEASE_CONFIGURATION ${RELEASE_CONFIGURATIONS})
+	string(TOUPPER ${RELEASE_CONFIGURATION} RELEASE_CONFIGURATION)
+	target_compile_definitions(fs2_open PRIVATE $<$<CONFIG:${RELEASE_CONFIGURATION}>:NDEBUG;${fs2_open_DEFINES}>)
+	string(REGEX REPLACE "_" "-" RELEASE_SUFFIX ${RELEASE_CONFIGURATION})
+	string(REGEX REPLACE "RELEASE" "" RELEASE_SUFFIX ${RELEASE_SUFFIX})
+	set_target_properties(fs2_open PROPERTIES OUTPUT_NAME_${RELEASE_CONFIGURATION} "fs2_open_${VERSION_STRING}${RELEASE_SUFFIX}")
+endforeach(RELEASE_CONFIGURATION ${RELEASE_CONFIGURATIONS})
+foreach(DEBUG_CONFIGURATION ${DEBUG_CONFIGURATIONS})
+	string(TOUPPER ${DEBUG_CONFIGURATION} DEBUG_CONFIGURATION)
+	string(REGEX REPLACE "_" "-" DEBUG_SUFFIX ${DEBUG_CONFIGURATION})
+	target_compile_definitions(fs2_open PRIVATE $<$<CONFIG:${DEBUG_CONFIGURATION}>:_DEBUG;${fs2_open_DEFINES}>)
+	set_target_properties(fs2_open PROPERTIES OUTPUT_NAME_${DEBUG_CONFIGURATION} "fs2_open_${VERSION_STRING}-${DEBUG_SUFFIX}")
+endforeach(DEBUG_CONFIGURATION ${DEBUG_CONFIGURATIONS})
+if(MSVC)
+	foreach(DEBUG_CONFIGURATION ${DEBUG_CONFIGURATIONS})
+		target_compile_definitions(fs2_open PRIVATE $<$<CONFIG:${DEBUG_CONFIGURATION}>:_DEBUG;PDB_DEBUGGING=1;_HAS_ITERATOR_DEBUGGING=0;${fred2_DEFINES}>)
+	endforeach(DEBUG_CONFIGURATION ${DEBUG_CONFIGURATIONS})
+endif(MSVC)

@@ -1,5 +1,5 @@
 
-list(APPEND c
+list(APPEND libcode_SOURCES
 	code/ai/ai.cpp
 	code/ai/ai.h
 	code/ai/ai_profiles.cpp
@@ -570,5 +570,3 @@ elseif(MSVC)
 		code/osapi/outwnd.h
 	)
 endif()
-
-add_library(libcode OBJECT ${libcode_SOURCES})
