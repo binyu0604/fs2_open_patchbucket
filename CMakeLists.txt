@@ -74,4 +74,8 @@ endif()
 include(dependencies.cmake)
 
 include(fs2_open.cmake)
-include(fred2.cmake)
+
+find_package(MFC)
+if(MFC_FOUND)
+	include(fred2.cmake)
+endif(MFC_FOUND)
