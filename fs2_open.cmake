@@ -83,7 +83,7 @@ if(MSVC)
 endif()
 
 target_include_directories(fs2_open PUBLIC ${fs2_open_INCLUDE_DIRECTORIES})
-target_link_libraries(fs2_open ${fs2_open_LINK_LIBRARIES})
+target_link_libraries(fs2_open ${fs2_open_LINK_LIBRARIES} ${CMAKE_DL_LIBS})
 
 get_property(DEBUG_CONFIGURATIONS GLOBAL PROPERTY DEBUG_CONFIGURATIONS)
 list(APPEND RELEASE_CONFIGURATIONS ${CMAKE_CONFIGURATION_TYPES})
